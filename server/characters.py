@@ -1,17 +1,16 @@
-class Character(object):
-    def __init__(self):
-        pass
+from items import Item
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__}>"
+class Character(Item):
+    def __init__(self, x=None, y=None):
+        Item.__init__(self, x, y)
 
 
 class Pirate(Character):
-    def __init__(self):
-        Character.__init__(self)
+    def __init__(self, x=None, y=None):
+        Character.__init__(self, x, y)
         self.burder = None
 
 
 class Ship(Character):
-    def __init__(self):
-        Character.__init__(self)
+    def __init__(self, x=None, y=None):
+        Character.__init__(self, x, y)
