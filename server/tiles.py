@@ -130,7 +130,7 @@ class TileCardLighthouse(TileCard):
         TileCard.__init__(self)     
 
 
-class TileCardBennGann(TileCard):
+class TileCardBenGunn(TileCard):
     def __init__(self):
         TileCard.__init__(self)        
 
@@ -228,7 +228,7 @@ class TilesPack(Pack):
 
         self.items = self.items + [TileCardBarrel() for i in range(4)]
 
-        self.items = self.items + [TileCardBennGann()]
+        self.items = self.items + [TileCardBenGunn()]
         self.items = self.items + [TileCardMissionary()]
         self.items = self.items + [TileCardFriday()]
 
