@@ -1,0 +1,7 @@
+__pycache__/
+.pgdata/
+.vscode/
+old/
+*.html
+tmp/
+.env

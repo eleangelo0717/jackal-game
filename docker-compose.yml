@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+
+  db:
+    image: postgres:12
+    restart: always
+    ports:
+      - "55432:5432"
+    volumes:
+      - "${PWD}/.pgdata:/var/lib/postgresql/data:Z"
+    environment:
+      POSTGRES_DB: "${PG_DB}"
+      POSTGRES_USER: "${PG_USER}"
+      POSTGRES_PASSWORD: "${PG_PASSWD}"
+
+  rest:
+    image: postgrest/postgrest
+    restart: always
+    ports:
+      - "53000:3000"
+    environment:
+      PGRST_DB_URI: "postgres://${PG_USER}:${PG_PASSWD}@db:5432/${PG_DB}"
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: ${PG_USER}
+    links:
+      - db:db
+    depends_on:
+      - db
+
+  worker:
+    build:
+      dockerfile: "${PWD}/worker/Dockerfile"
+      context: "${PWD}/worker"
+    restart: always
+    volumes:
+      - "${PWD}/tmp:/app/tmp:z"
+    environment:
+      REST_URL: "http://rest:3000"
+    links:
+      - rest:rest
+    depends_on:
+      - rest
+
+  bot:
+    build:
+      dockerfile: "${PWD}/bot/Dockerfile"
+      context: "${PWD}/bot"
+    restart: always
+    environment:
+      REST_URL: "http://rest:3000"
+      TGM_BOT_TOKEN: "${TGM_BOT_TOKEN}"
+      PROXY_URL: "socks5h://flas.ga:9050/"
+    links:
+      - rest:rest
+    depends_on:
+      - rest
