@@ -9,6 +9,7 @@ class Character(object):
 class Pirate(Character):
     def __init__(self):
         Character.__init__(self)
+        self.burder = None
 
 
 class Ship(Character):
