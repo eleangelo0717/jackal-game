@@ -219,9 +219,6 @@ class TilesPack(Pack):
         self.items = self.items + [TileCardJungle() for i in range(3)]
         self.items = self.items + [TileCardGrass() for i in range(2)]
 
-
-
-
         self.items = self.items + [TileCardRum(1) for i in range(3)]
         self.items = self.items + [TileCardRum(2) for i in range(2)]
         self.items = self.items + [TileCardRum(3) for i in range(1)]

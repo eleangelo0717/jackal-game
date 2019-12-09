@@ -9,6 +9,9 @@ class Item(object):
     def Move(self, x, y):
         (self.x, self.y) = (x, y)
 
+    def isPlaced(self):
+        return not (self.x is None or self.y is None)
+
 
 class Coin(Item):
     def __init__(self, x=None, y=None):

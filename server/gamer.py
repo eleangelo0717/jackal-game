@@ -13,6 +13,7 @@ class Gamer(object):
         (x, y) = places[self.id]
         self.ship = characters.Ship(x=x, y=y)
         self.pirates = [characters.Pirate(x=x, y=y) for i in range(3)]
+        self.items = []
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.team} Pirates:{len(self.pirates)}>"

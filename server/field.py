@@ -55,3 +55,28 @@ class Field(object):
             for place in row:
                 if place.isGround:
                     place.tile = tilesPack.Next()
+
+
+    def isPlaceGround(self, x, y):
+        if not self.isPlaceInField(x, y):
+            return False
+        return self.places[x][y].isGround    
+
+    def isPlaceOcean(self, x, y):
+        if not self.isPlaceInField(x, y):
+            return False
+        return not self.places[x][y].isGround      
+
+    def isPlaceInField(self, x, y):
+        return len(self.places) and x >= 0 and y >= 0 and x < len(self.places) and y < len(self.places[0]) and self.places[x][y].isExisits
+
+    def isPlaceNearChest(self, x, y):
+        if not self.isPlaceInField(x, y):
+            return False
+        for dx in [1, -1]:
+            if self.isPlaceGround(x + dx, y):
+                return True
+        for dy in [1, -1]:
+            if self.isPlaceGround(x, y + dy):
+                return True
+        return False
