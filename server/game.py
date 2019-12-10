@@ -1,19 +1,41 @@
 from field import Field
 from gamer import Gamer
+import characters
+import moves
 
+places = [
+    (6, 0),
+    (12, 6),
+    (6, 12),
+    (0, 6)
+]
 
 class Game(object):
     def __init__(self):
         self.field = Field()
+        self.items = []
         self.gamers = [Gamer(id=i, team=i) for i in range(4)]
-        self.field = Field()
+        self.initItems()
+
+    def initItems(self):
+        for gamer in self.gamers:
+            (x, y) = places[gamer.id]
+            self.items.append(characters.Ship(gamer=gamer, x=x, y=y))
+            for i in range(3):
+                self.items.append(characters.Pirate(gamer=gamer, x=x, y=y))
+
+
+    def gamerCharacters(self, gamer):
+        return [item for item in self.items if item.gamer == gamer and item.isCharacter]
+
 
     def avaiableMoves(self, gamer):
-        moves = []
-        moves = moves + [{'character': gamer.ship, 'move': move} for move in gamer.ship.avaiableMoves(self)]
-        for pirate in gamer.pirates:
-            moves = moves + [{'character': pirate, 'move': move} for move in pirate.avaiableMoves(self)]
-        return moves
+        gamerCharacters = self.gamerItems(gamer)
+        result = []
+        for character in gamerCharacters:
+            result = result + [moves.CharacterMove(character=character, move=move) for move in character.avaiableMoves(game=self)]
+        return result
+
 
     def haveOwnShip(self, x, y):
         return False

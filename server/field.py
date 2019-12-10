@@ -56,6 +56,12 @@ class Field(object):
                 if place.isGround:
                     place.tile = tilesPack.Next()
 
+    def getPlace(self, x, y):
+        try:
+            return self.places[x][y] 
+        except:
+            return None
+        return None
 
     def isPlaceGround(self, x, y):
         if not self.isPlaceInField(x, y):
