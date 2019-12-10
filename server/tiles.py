@@ -12,9 +12,10 @@ class Direction(object):
         ]
         (self.x, self.y) = angleFunc[angle]
 
+
 class TileCard(object):
-    def __init__(self):
-        pass
+    def __init__(self, angle=0):
+        self.angle = angle
 
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
@@ -57,9 +58,9 @@ class TileCardTreasure(TileCard):
 
 class TileCardRow(TileCard):
     def __init__(self, directionsFormulae):
-        TileCard.__init__(self)
-        self.directions = []
         angle = random.randint(0,3)
+        TileCard.__init__(self, angle)
+        self.directions = []
         for formula in directionsFormulae:
             direction = Direction(formula[0], formula[1], angle)
             self.directions.append(direction)
@@ -75,8 +76,8 @@ class TileCardAirplane(TileCard):
 
 class TileCardCannon(TileCard):
     def __init__(self):
-        TileCard.__init__(self)   
         angle = random.randint(0,3)
+        TileCard.__init__(self, angle)   
         self.direction = Direction(1, 0, angle)
 
 
@@ -174,10 +175,10 @@ class TilesPack(Pack):
 
     def __init__(self):
         Pack.__init__(self, [])
-        self.__generate()
+        self._generate()
         self.Shuffle()
 
-    def __generate(self):
+    def _generate(self):
         self.items = self.items + [TileCard() for i in range(18)]
 
         self.items = self.items + [TileCardRow([[1, 0]]) for i in range(3)]

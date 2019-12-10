@@ -1,27 +1,28 @@
 from tiles import TilesPack
-
+import moves
 
 class FieldPlace(object):
 
-    def __init__(self, x, y):
+    def __init__(self, field, x, y):
+        self.field = field
         self.x = x
         self.y = y
         self.opened = False
-        self.isExisits = self.__isExists()
-        self.isGround = self.__isGround()
+        self._exisits = self._isExists()
+        self._ground = self._isGround()
         self.tile = None
 
     def __repr__(self):
-        if self.isExisits:
+        if self._exisits:
             return f"<{self.__class__.__name__} [{self.x}:{self.y}] Tile:{self.tile}>"
         else:
             return f"<{self.__class__.__name__}>"
 
-    def __isExists(self):
+    def _isExists(self):
         return not ((self.x == 0 or self.x == 12) and (self.y == 0 or self.y == 12))
 
-    def __isGround(self):
-        return self.__isExists() and (
+    def _isGround(self):
+        return self._exisits and (
             not (
                 (self.x == 0 or self.x == 12 or self.y == 0 or self.y == 12) or (
                     (self.x == 1 or self.x == 11) and (
@@ -30,47 +31,75 @@ class FieldPlace(object):
             )
         )
 
+
+    def getPlaceByDirection(self, direction):
+        (x, y) = (self.x + direction.x, self.y + direction.y)
+        if x < 0 or y < 0:
+            return None
+        return self.field.getPlaceByCoordinates(x, y)
+        
+
+    def getNeighboringPlaces(self, moveArray=moves.directions4):
+        if not self.isExists():
+            return []
+        return [p for p in [
+            self.getPlaceByDirection(direction)
+            for direction in moveArray 
+            ] if p]
+
+    def isExists(self):
+        return self._exisits
+
+    def isGround(self):
+        return self._exisits and self._ground
+    
+    def isSea(self):
+        return self._exisits and not self._ground
+
     def Open(self):
-        if self.isExisits and self.tile and not self.opened:
+        if self.isGround() and self.tile and not self.opened:
             self.opened = True
             return self.tile
         return None
 
     def View(self):
-        if self.isExisits and self.tile and self.opened:
+        if self.isGround() and self.tile and self.opened:
             return self.tile
         return None
+
+    def hasTeamShip(self, team):
+        for i in self.field.game.items:
+            if i.x == self.x and i.y == self.y and i.gamer.team == team:
+                return True
+        return False
 
 
 class Field(object):
 
-    def __init__(self):
-        self.places = [[FieldPlace(row, col)
+    def __init__(self, game):
+        self.game = game
+        self.places = [[FieldPlace(self, row, col)
                         for col in range(13)] for row in range(13)]
-        self.__placeTiles()
+        self._placeTiles()
 
-    def __placeTiles(self):
+    def _placeTiles(self):
         tilesPack = TilesPack()
         for row in self.places:
             for place in row:
-                if place.isGround:
+                if place.isGround():
                     place.tile = tilesPack.Next()
 
-    def getPlace(self, x, y):
+    def getPlaceByCoordinates(self, x, y):
+        place = None
         try:
-            return self.places[x][y] 
+            place = self.places[x][y] 
         except:
             return None
+        if place.isExists():
+            return place
         return None
 
-    def getNeighboringPlaces(self, place, moveArray):
-        if not place.isExisits:
-            return []
-        return [p for p in [
-            self.getPlace(place.x + m[0], place.y + m[1]) 
-            for m in moveArray 
-            if place.x + m[0] >=0 and place.y + m[1] >= 0
-            ] if p]
+
 
     def isPlaceGround(self, x, y):
         if not self.isPlaceInField(x, y):
