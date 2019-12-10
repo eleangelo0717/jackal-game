@@ -30,12 +30,15 @@ class Game(object):
 
 
     def avaiableMoves(self, gamer):
-        gamerCharacters = self.gamerItems(gamer)
+        gamerCharacters = self.gamerCharacters(gamer)
         result = []
         for character in gamerCharacters:
             result = result + [moves.CharacterMove(character=character, move=move) for move in character.avaiableMoves(game=self)]
         return result
 
 
-    def haveOwnShip(self, x, y):
+    def hasOwnShip(self, fieldPlace, item):
+        for i in self.items:
+            if i.x == fieldPlace.x and i.y == fieldPlace.y and i.gamer == item.gamer:
+                return True
         return False

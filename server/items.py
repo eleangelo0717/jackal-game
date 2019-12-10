@@ -1,3 +1,11 @@
+def checkPlaced(f):
+    def wrapper(*args):
+        item = args[0]
+        if not item.isPlaced():
+            return []
+        return f(*args)
+    return wrapper
+
 class Item(object):
     def __init__(self, gamer=None, x=None, y=None):
         self.x = x
@@ -12,8 +20,8 @@ class Item(object):
         (self.x, self.y) = (x, y)
 
     def getPlace(self, game):
-        return game.getPlace(self.x, self,y)
-        
+        return game.field.getPlace(self.x, self.y)
+
     def isPlaced(self):
         return not (self.x is None or self.y is None)
 

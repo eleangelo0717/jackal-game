@@ -6,6 +6,9 @@ class Move(object):
         self.x = x
         self.y = y
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} [{self.x}:{self.y}]>"
+
 class CharacterMove(object):
     def __init__(self, character, move):
         self.character = character

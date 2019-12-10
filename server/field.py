@@ -13,7 +13,7 @@ class FieldPlace(object):
 
     def __repr__(self):
         if self.isExisits:
-            return f"<{self.__class__.__name__} Tile:{self.tile}>"
+            return f"<{self.__class__.__name__} [{self.x}:{self.y}] Tile:{self.tile}>"
         else:
             return f"<{self.__class__.__name__}>"
 
@@ -62,6 +62,15 @@ class Field(object):
         except:
             return None
         return None
+
+    def getNeighboringPlaces(self, place, moveArray):
+        if not place.isExisits:
+            return []
+        return [p for p in [
+            self.getPlace(place.x + m[0], place.y + m[1]) 
+            for m in moveArray 
+            if place.x + m[0] >=0 and place.y + m[1] >= 0
+            ] if p]
 
     def isPlaceGround(self, x, y):
         if not self.isPlaceInField(x, y):

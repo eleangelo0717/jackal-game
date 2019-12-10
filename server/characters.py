@@ -1,4 +1,4 @@
-from items import Item
+from items import Item, checkPlaced
 import moves
 
 class Character(Item):
@@ -13,41 +13,36 @@ class Pirate(Character):
     def __init__(self, gamer=None, x=None, y=None):
         Character.__init__(self, gamer, x, y)
         self.burder = None
-
+    
+    @checkPlaced
     def avaiableMoves(self, game):
         result=[]
-        if not self.isPlaced:
-            return result
         fieldPlace = self.getPlace(game)
         if fieldPlace is None:
             return []
-
-        if not game.field.isPlaceInField(self.x, self.y):
-            return result
-        if game.field.isPlaceGround(self.x, self.y):
-            for move in moves.movesArrayWithDiagonales:
-                x = self.x + move[0]
-                y = self.y + move[1]
-                if game.field.isPlaceGround(x, y) or (
-                    game.field.isPlaceOcean(x, y) and game.haveOwnShip(x, y)
-                    ):
-                    result.append((x, y))
-            return result
-        if game.field.isPlaceOcean(self.x, self.y):
-            if game.haveOwnShip(self.x, self.y):
-                for move in moves.movesArray():
-                    x = self.x + move[0]
-                    y = self.y + move[1]
-                    if game.field.isPlaceGround(x, y):
-                        result.append((x, y))
+        if fieldPlace.isGround:
+            result = result + [
+                moves.Move(p.x, p.y) 
+                for p 
+                in game.field.getNeighboringPlaces(fieldPlace, moves.movesArrayWithDiagonales)
+                if p.isGround or (not p.isGround and game.hasOwnShip(p, self))
+                ]
+        else:
+            if game.hasOwnShip(fieldPlace, self):
+                result = result + [
+                    moves.Move(p.x, p.y) 
+                    for p 
+                    in game.field.getNeighboringPlaces(fieldPlace, moves.movesArray)
+                    if p.isGround
+                    ]
             else:
-                for move in moves.movesArrayWithDiagonales():
-                    x = self.x + move[0]
-                    y = self.y + move[1]
-                    if game.field.isPlaceOcean(x, y):
-                        result.append((x, y))                
-            return result
-        return result
+                result = result + [
+                    moves.Move(p.x, p.y) 
+                    for p 
+                    in game.field.getNeighboringPlaces(fieldPlace, moves.movesArrayWithDiagonales)
+                    if not p.isGround
+                    ]              
+        return list(set(result))
 
 class Missionary(Pirate):
     pass 
@@ -66,18 +61,19 @@ class Ship(Character):
         Character.__init__(self, gamer, x, y)
         self.items = []
     
+    @checkPlaced
     def avaiableMoves(self, game):
-        moves=[]
-        if not self.isPlaced:
-            return moves
-        if not game.field.isPlaceInField(self.x, self.y):
-            return moves
-        for move in moves.movesArray():
-            x = self.x + move[0]
-            y = self.y + move[1]
-            if game.field.isPlaceOcean(x, y) and game.field.isPlaceNearChest(x, y):
-                moves.append((x, y))
-        return moves
+        result=[]
+        fieldPlace = self.getPlace(game)
+        if fieldPlace is None:
+            return []
+        result = result + [
+                moves.Move(p.x, p.y) 
+                for p 
+                in game.field.getNeighboringPlaces(fieldPlace, moves.movesArray)
+                if not p.isGround and game.field.isPlaceNearChest(p.x, p.y)
+                ]
+        return list(set(result))
                     
 
         
