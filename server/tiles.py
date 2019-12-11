@@ -47,7 +47,7 @@ class TileCardChest(TileCard):
         return f"<{self.__class__.__name__} money:{self.money}>"
 
     def activate(self, character):
-        for i in range(self.money):
+        for _ in range(self.money):
             coin = character.gamer.game.getFreeItem('Coin')
             if not coin:
                 return None
@@ -64,7 +64,7 @@ class TileCardRum(TileCard):
         return f"<{self.__class__.__name__} bottles:{self.bottles}>"
 
     def activate(self, character):
-        for i in range(self.bottles):
+        for _ in range(self.bottles):
             bottle = character.gamer.game.getFreeItem('Bottle')
             if not bottle:
                 return None

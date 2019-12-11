@@ -76,6 +76,10 @@ class FieldPlace(object):
     def getItems(self):
         return [item for item in self.field.game.items if item.x == self.x and item.y == self.y]
 
+    def placeTile(self, tile):
+        self.tile = tile
+        tile.place = self
+
 class Field(object):
 
     def __init__(self, game):
