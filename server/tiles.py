@@ -81,7 +81,7 @@ class TileCardTreasure(TileCard):
         treasure = character.gamer.game.getFreeItem('Treasure')
         if not treasure:
             return None
-        (treasure.x, treasure.y) = (self.x, self.y)
+        (treasure.x, treasure.y) = (self.place.x, self.place.y)
         return 0
 
 

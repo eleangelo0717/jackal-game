@@ -17,7 +17,7 @@ class Gamer(object):
         return [item for item in self.getItems() if item.isCharacter]
 
     def getShip(self):
-        return [item for item in self.getItems() if item.className == 'Ship'][0]
+        return [item for item in self.getItems() if item.className() == 'Ship'][0]
 
     def availableMoves(self):
         result = []

@@ -16,6 +16,7 @@ class Character(Item):
         moves = [m for m in self.availableMoves() if m.x == move.x and m.y == move.y and m.payload == move.payload]
         if not len(moves):
             return None
+        items = [item for item in self.getPlace().getItems() if item.className() == move.payload and move.payload]
         place = self.gamer.game.field.getPlaceByCoordinates(move.x, move.y)
         if not place:
             return None
@@ -25,11 +26,12 @@ class Character(Item):
         if openedTile:
             actionResult = openedTile.activate(self)
             print(actionResult)
-        if move.payload:
-            items = [item for item in place.getItems() if item.className() == move.payload]
-            print(items)
-            if len(items):
-                (items[0].x, items[0].y) = (self.x, self.y)
+        if len(items):
+            (items[0].x, items[0].y) = (self.x, self.y)
+            ship = self.gamer.getShip()
+            if items[0].x == ship.x and items[0] == ship.y:
+                items[0].gamer = self.gamer
+            print(items[0])
         return self
 
     def getPlace(self):
@@ -48,15 +50,15 @@ class Pirate(Character):
         if not fieldPlace:
             return []
         if fieldPlace.isGround():
-            availableMoves = [
-                moves.Move(p.x, p.y) 
+            availablePlaces = [
+                p 
                 for p 
                 in fieldPlace.getNeighboringPlaces(moves.directions8)
                 if p and (p.isGround() or (p.isSea() and p.hasTeamShip(self.gamer.team)))
                 ]
-            result += availableMoves
+            result += [moves.Move(p.x, p.y) for p in availablePlaces]
             for payload in list(set([item.className() for item in fieldPlace.getItems() if item.moveable])):
-                result += [moves.Move(p.x, p.y, payload) for p in availableMoves]
+                result += [moves.Move(p.x, p.y, payload) for p in availablePlaces if p.opened or p.hasTeamShip(self.gamer.team)]
         else:
             if fieldPlace.hasTeamShip(self.gamer.team):
                 result += [moves.Move(p.x, p.y) for p in
