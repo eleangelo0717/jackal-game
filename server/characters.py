@@ -5,6 +5,7 @@ class Character(Item):
     def __init__(self, gamer=None, x=None, y=None):
         Item.__init__(self, gamer, x, y)
         self.isCharacter = True
+        self.lastMove = None
 
     def availableMoves(self):
         return []
@@ -12,10 +13,11 @@ class Character(Item):
     def getItems(self):
         return [item for item in self.gamer.game.items if item.character == self]
 
-    def move(self, move):
-        moves = [m for m in self.availableMoves() if m.x == move.x and m.y == move.y and m.payload == move.payload]
-        if not len(moves):
-            return None
+    def move(self, move, force=False):
+        if not force:
+            moves = [m for m in self.availableMoves() if m.x == move.x and m.y == move.y and m.payload == move.payload]
+            if not len(moves):
+                return None
         items = [item for item in self.getPlace().getItems() if item.className() == move.payload and move.payload]
         place = self.gamer.game.field.getPlaceByCoordinates(move.x, move.y)
         if not place:
@@ -23,9 +25,13 @@ class Character(Item):
         print(place.tile)
         (self.x, self.y, self._x, self._y) = (move.x, move.y, self.x, self.y)
         openedTile = place.open()
+        self.lastMove = move
         if openedTile:
             actionResult = openedTile.activate(self)
-            print(actionResult)
+        else:
+            actionResult = openedTile.action(self)
+        print(actionResult)
+        self.lastMove = move
         if len(items):
             (items[0].x, items[0].y) = (self.x, self.y)
             ship = self.gamer.getShip()

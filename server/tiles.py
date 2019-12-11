@@ -1,6 +1,7 @@
 import random
 
 from pack import Pack
+from moves import Move
 
 class Direction(object):
     def __init__(self, x, y, angle=0):
@@ -25,6 +26,9 @@ class TileCard(object):
         return self.__class__.__name__
 
     def activate(self, character):
+        self.action(character)
+    
+    def action(self, character):
         pass
 
 
@@ -98,7 +102,11 @@ class TileCardRow(TileCard):
         return f"<{self.__class__.__name__} directions:{len(self.directions)}>"
 
     def activate(self, character):
+        self.action(character)
         return 1
+
+    def action(self, character):
+        return 0
 
 
 class TileCardAirplane(TileCard):
@@ -125,8 +133,10 @@ class TileCardIce(TileCard):
     def __init__(self):
         TileCard.__init__(self)
 
-    def activate(self, character):
-        return 1
+    def action(self, character):
+        move = Move(character.x * 2 - character._x, character.y * 2 - character._y, character.lastMove.payload)
+        character.move(move, force=True)
+        return
 
 
 class TileCardTrap(TileCard):
@@ -136,18 +146,18 @@ class TileCardTrap(TileCard):
 
 class TileCardCroco(TileCard):
     def __init__(self):
-        TileCard.__init__(self)        
+        TileCard.__init__(self)
 
-    def activate(self, character):
+    def action(self, character):
         (character.x, character.y) = (character._x, character._y)
-        return 0
+        return
 
 
 class TileCardCannibal(TileCard):
     def __init__(self):
         TileCard.__init__(self)    
 
-    def activate(self, character):
+    def action(self, character):
         (character.x, character.y) = (None, None)
         return 0 
 

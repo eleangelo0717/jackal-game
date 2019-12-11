@@ -1,7 +1,9 @@
 import unittest
 
 from game import Game
-from tiles import TileCardChest, TileCardTreasure, TileCardRum
+from tiles import TileCard, TileCardChest, TileCardTreasure, TileCardRum, TileCardIce
+
+import moves
 
 class TestGame(unittest.TestCase):
 
@@ -91,3 +93,20 @@ class TestGame(unittest.TestCase):
         ship = c.gamer.getShip()
         self.assertEqual(len([item for item in ship.getItems() if item.className() == 'Bottle']), 3)
 
+
+    def test_TileCardIce(self):
+        tile = TileCardIce()
+        tile2 = TileCard()
+        self.g.field.getPlaceByCoordinates(6,1).placeTile(tile)
+        self.g.field.getPlaceByCoordinates(6,2).placeTile(tile2)
+        items = self.g.items
+        c = [item for item in items if item.className() == 'Pirate'][0]
+        c.x=6
+        c.y=0
+        c.move(moves.Move(6,1))
+        self.assertEqual(c.x, 6)
+        self.assertEqual(c.y, 2)
+        self.assertTrue(self.g.field.getPlaceByCoordinates(6,1).opened)
+        self.assertTrue(self.g.field.getPlaceByCoordinates(6,2).opened)
+        self.assertFalse(self.g.field.getPlaceByCoordinates(6,3).opened)
+    
