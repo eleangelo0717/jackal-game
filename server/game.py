@@ -32,3 +32,10 @@ class Game(object):
         self.items += [items.Chest() for i in range(1)]
         self.items += [items.Bottle() for i in range(10)]
 
+
+    def getFreeItem(self, itemClass):
+        items = [item for item in self.items if not item.gamer and item.__class__.__name__ == itemClass]
+        if len(items) == 0:
+            return None
+        return items[0]
+        
