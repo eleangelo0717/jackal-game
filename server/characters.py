@@ -25,7 +25,7 @@ class Pirate(Character):
                 moves.Move(p.x, p.y) 
                 for p 
                 in fieldPlace.getNeighboringPlaces(moves.directions8)
-                if p and (p.isGround() or (not p.isGround() and p.hasTeamShip(self.gamer.team)))
+                if p and (p.isGround() or (p.isSea() and p.hasTeamShip(self.gamer.team)))
                 ]
         else:
             if fieldPlace.hasTeamShip(self.gamer.team):
