@@ -6,8 +6,11 @@ class Character(Item):
         Item.__init__(self, gamer, x, y)
         self.isCharacter = True
 
-    def avaiableMoves(self, game):
+    def avaiableMoves(self):
         return []
+
+    def getItems(self):
+        return [item for item in self.gamer.game.items if item.character == self]
 
 class Pirate(Character):
     def __init__(self, gamer=None, x=None, y=None):
@@ -64,7 +67,6 @@ class BenGunn(Pirate):
 class Ship(Character):
     def __init__(self, gamer=None, x=None, y=None):
         Character.__init__(self, gamer, x, y)
-        self.items = []
     
     @checkPlaced
     def avaiableMoves(self):
