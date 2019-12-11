@@ -29,12 +29,12 @@ class Game(object):
         self.items.append(characters.BenGunn())
 
         self.items += [items.Coin() for i in range(37)]
-        self.items += [items.Chest() for i in range(1)]
+        self.items += [items.Treasure() for i in range(1)]
         self.items += [items.Bottle() for i in range(10)]
 
 
-    def getFreeItem(self, itemClass):
-        items = [item for item in self.items if not item.gamer and item.__class__.__name__ == itemClass]
+    def getFreeItem(self, className):
+        items = [item for item in self.items if not item.isPlaced() and item.className() == className]
         if len(items) == 0:
             return None
         return items[0]

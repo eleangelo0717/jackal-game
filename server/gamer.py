@@ -5,6 +5,7 @@ class Gamer(object):
         self.game = game
         self.id = id
         self.team = team
+        self.angle = id
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.id}>"
@@ -14,6 +15,9 @@ class Gamer(object):
 
     def getCharacters(self):
         return [item for item in self.getItems() if item.isCharacter]
+
+    def getShip(self):
+        return [item for item in self.getItems() if item.className == 'Ship'][0]
 
     def availableMoves(self):
         result = []

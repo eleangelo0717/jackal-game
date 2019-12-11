@@ -1,11 +1,12 @@
 
 class Move(object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, payload = None):
         self.x = x
         self.y = y
+        self.payload = payload
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} [{self.x}:{self.y}]>"
+        return f"<{self.__class__.__name__} [{self.x}:{self.y}] {self.payload}>"
 
 class CharacterMove(object):
     def __init__(self, character, move):

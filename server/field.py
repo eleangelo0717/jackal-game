@@ -56,13 +56,13 @@ class FieldPlace(object):
     def isSea(self):
         return self._exisits and not self._ground
 
-    def Open(self):
+    def open(self):
         if self.isGround() and self.tile and not self.opened:
             self.opened = True
             return self.tile
         return None
 
-    def View(self):
+    def view(self):
         if self.isGround() and self.tile and self.opened:
             return self.tile
         return None
@@ -73,6 +73,8 @@ class FieldPlace(object):
                 return True
         return False
 
+    def getItems(self):
+        return [item for item in self.field.game.items if item.x == self.x and item.y == self.y]
 
 class Field(object):
 
@@ -88,6 +90,7 @@ class Field(object):
             for place in row:
                 if place.isGround():
                     place.tile = tilesPack.Next()
+                    place.tile.place = place
 
     def getPlaceByCoordinates(self, x, y):
         place = None

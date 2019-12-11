@@ -1,3 +1,5 @@
+import moves
+
 def checkPlaced(f):
     def wrapper(*args):
         item = args[0]
@@ -11,13 +13,19 @@ class Item(object):
         self.gamer = gamer
         self.x = x
         self.y = y
+        self._x = None
+        self._y = None
         self.character = None
         self.isCharacter = False
+        self.moveable = False
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.gamer and self.gamer.id} [{self.x}:{self.y}]>"
 
-    def Move(self, x, y):
+    def className(self):
+        return self.__class__.__name__
+
+    def move(self, x, y):
         (self.x, self.y) = (x, y)
 
     def getPlace(self):
@@ -40,12 +48,14 @@ class Item(object):
 class Coin(Item):
     def __init__(self, gamer=None, x=None, y=None):
         Item.__init__(self, x, y)
+        self.moveable = True
         self.price = 1
 
 
-class Chest(Item):
+class Treasure(Item):
     def __init__(self, gamer=None, x=None, y=None):
         Item.__init__(self, x, y)
+        self.moveable = True
         self.price = 3
 
 class Bottle(Item):

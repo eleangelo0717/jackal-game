@@ -14,14 +14,19 @@ class Direction(object):
 
 
 class TileCard(object):
-    def __init__(self, angle=0):
+    def __init__(self, place=None, angle=0):
         self.angle = angle
+        self.place = None
 
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
 
     def className(self):
         return self.__class__.__name__
+
+    def activate(self, character):
+        pass
+
 
 
 class TileCardWhirl(TileCard):
@@ -41,6 +46,14 @@ class TileCardChest(TileCard):
     def __repr__(self):
         return f"<{self.__class__.__name__} money:{self.money}>"
 
+    def activate(self, character):
+        for i in range(self.money):
+            coin = character.gamer.game.getFreeItem('Coin')
+            if not coin:
+                return None
+            (coin.x, coin.y) = (self.place.x, self.place.y)
+        return 0
+
 
 class TileCardRum(TileCard):
     def __init__(self, bottles):
@@ -50,10 +63,26 @@ class TileCardRum(TileCard):
     def __repr__(self):
         return f"<{self.__class__.__name__} bottles:{self.bottles}>"
 
+    def activate(self, character):
+        for i in range(self.bottles):
+            bottle = character.gamer.game.getFreeItem('Bottle')
+            if not bottle:
+                return None
+            (bottle.x, bottle.y) = (self.place.x, self.place.y)
+            bottle.setCharacter(character.gamer.getShip())
+        return 0
+
 
 class TileCardTreasure(TileCard):
     def __init__(self):
         TileCard.__init__(self)
+
+    def activate(self, character):
+        treasure = character.gamer.game.getFreeItem('Treasure')
+        if not treasure:
+            return None
+        (treasure.x, treasure.y) = (self.x, self.y)
+        return 0
 
 
 class TileCardRow(TileCard):
@@ -67,6 +96,9 @@ class TileCardRow(TileCard):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} directions:{len(self.directions)}>"
+
+    def activate(self, character):
+        return 1
 
 
 class TileCardAirplane(TileCard):
@@ -85,10 +117,16 @@ class TileCardHorse(TileCard):
     def __init__(self):
         TileCard.__init__(self)
 
+    def activate(self, character):
+        return 1
+
 
 class TileCardIce(TileCard):
     def __init__(self):
         TileCard.__init__(self)
+
+    def activate(self, character):
+        return 1
 
 
 class TileCardTrap(TileCard):
@@ -100,10 +138,18 @@ class TileCardCroco(TileCard):
     def __init__(self):
         TileCard.__init__(self)        
 
+    def activate(self, character):
+        (character.x, character.y) = (character._x, character._y)
+        return 0
+
 
 class TileCardCannibal(TileCard):
     def __init__(self):
-        TileCard.__init__(self)        
+        TileCard.__init__(self)    
+
+    def activate(self, character):
+        (character.x, character.y) = (None, None)
+        return 0 
 
 
 class TileCardFort(TileCard):
@@ -135,16 +181,41 @@ class TileCardBenGunn(TileCard):
     def __init__(self):
         TileCard.__init__(self)        
 
+    def activate(self, character):
+        p = character.gamer.game.getFreeItem('BenGunn')
+        if not p:
+            return None
+        (p.x, p.y) = (self.place.x, self.place.y)
+        p.gamer = character.gamer
+        print(p)
+        return 0
+
 
 class TileCardMissionary(TileCard):
     def __init__(self):
         TileCard.__init__(self)        
 
+    def activate(self, character):
+        p = character.gamer.game.getFreeItem('Missionary')
+        if not p:
+            return None
+        (p.x, p.y) = (self.place.x, self.place.y)
+        p.gamer = character.gamer
+        print(p)
+        return 0
 
 class TileCardFriday(TileCard):
     def __init__(self):
         TileCard.__init__(self)     
 
+    def activate(self, character):
+        p = character.gamer.game.getFreeItem('Friday')
+        if not p:
+            return None
+        (p.x, p.y) = (self.place.x, self.place.y)
+        p.gamer = character.gamer
+        print(p)
+        return 0
 
 class TileCardBarrel(TileCard):
     def __init__(self):
