@@ -15,9 +15,9 @@ class Gamer(object):
     def getCharacters(self):
         return [item for item in self.getItems() if item.isCharacter]
 
-    def avaiableMoves(self):
+    def availableMoves(self):
         result = []
         for character in self.getCharacters():
-            result += [moves.CharacterMove(character=character, move=move) for move in character.avaiableMoves()]
+            result += [moves.CharacterMove(character=character, move=move) for move in character.availableMoves()]
         return result
 

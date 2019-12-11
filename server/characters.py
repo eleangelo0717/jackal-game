@@ -6,7 +6,7 @@ class Character(Item):
         Item.__init__(self, gamer, x, y)
         self.isCharacter = True
 
-    def avaiableMoves(self):
+    def availableMoves(self):
         return []
 
     def getItems(self):
@@ -18,7 +18,7 @@ class Pirate(Character):
         self.burder = None
     
     @checkPlaced
-    def avaiableMoves(self):
+    def availableMoves(self):
         result=[]
         fieldPlace = self.getPlace()
         if not fieldPlace:
@@ -69,7 +69,7 @@ class Ship(Character):
         Character.__init__(self, gamer, x, y)
     
     @checkPlaced
-    def avaiableMoves(self):
+    def availableMoves(self):
         result=[]
         fieldPlace = self.getPlace()
         if not fieldPlace:
