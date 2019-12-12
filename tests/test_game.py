@@ -4,6 +4,7 @@ from game.field import Template, Coordinates, FIELD_TYPES
 from game.classic import ClassicGenerator
 
 
+
 class TestTemplate(unittest.TestCase):
 
     def test_Coordinates(self):
@@ -32,3 +33,6 @@ class TestTemplate(unittest.TestCase):
         self.assertEqual(len(t.places), 2)
         self.assertEqual(t.getPlace(Coordinates(6, 0)), 'SEA')
         self.assertEqual(t.getPlace(Coordinates(6, 1)), 'GROUND')
+
+
+

@@ -24,3 +24,13 @@ class TestTilesPack(unittest.TestCase):
         p = tiles.pack.TilesPack()
         t = Tile()
         self.assertEqual(p.next().className(), t.className())
+
+
+class TestPack(unittest.TestCase):
+    def test_pack_next(self):
+        p = tiles.pack.Pack(reuseable=True)
+        i = p.next()
+        t = Tile()
+        result = len(p.items)
+        self.assertEqual(result, 1)
+        self.assertEqual(i.className(), t.className())

@@ -7,25 +7,26 @@ class Generator(object):
         return tiles.tile.Tile()
 
 
-class TilesPack(object):
+class Pack(object):
     def __init__(
         self,
         generator: Generator = Generator(),
-        reusable: bool = False,
+        reuseable: bool = False,
     ):
-        self._reusable = reusable
         self._generator = generator
+        self._reuseable = reuseable
         self.items = []
         self.dropping = []
 
     def next(self):
         item = self._generator.next()
         if item:
-            self.items.append(item)
+            if self._reuseable:
+                self.items.append(item)
             return item
-        if self.reusable:
-            self.reload()
-            return self._generator.next()
+        if self._reuseable and (len(self.dropping) + len(self.items)):
+            return self.reload().shuffle().next()
+        return None
 
     def reload(self):
         if len(self.dropping) + len(self.items):
@@ -33,12 +34,6 @@ class TilesPack(object):
         else:
             return None
         return self
-
-    def next(self):
-        if len(self.items):
-            item, *self.items = self.items
-            return item
-        return None
 
     def shuffle(self):
         if self.items:
