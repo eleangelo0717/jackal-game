@@ -1,10 +1,9 @@
-import tiles.tile
 import random
 
 
 class Generator(object):
     def next(self):
-        return tiles.tile.Tile()
+        return 0
 
 
 class Pack(object):

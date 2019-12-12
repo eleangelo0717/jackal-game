@@ -4,7 +4,6 @@ from game.field import Template, Coordinates, FIELD_TYPES
 from game.classic import ClassicGenerator
 
 
-
 class TestTemplate(unittest.TestCase):
 
     def test_Coordinates(self):
