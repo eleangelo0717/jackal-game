@@ -1,7 +1,8 @@
 import unittest
 
 from game.field import Template, Coordinates, FIELD_TYPES
-from game.classic import ClassicGenerator
+from game.classic import ClassicGenerator, ClassicGame
+from pack.main import Pack, listGenerator
 
 
 class TestTemplate(unittest.TestCase):
@@ -34,4 +35,14 @@ class TestTemplate(unittest.TestCase):
         self.assertEqual(t.getPlace(Coordinates(6, 1)), 'GROUND')
 
 
+class TestPack(unittest.TestCase):
+
+    def test_pack(self):
+        g = ClassicGame()
+        p = Pack(listGenerator(g.fillTiles()))
+        i = p.next()
+        self.assertEqual(len(p.dropped), 1)
+        self.assertEqual(i.className(), 'Tile')
+        i = p.next()
+        self.assertEqual(len(p.dropped), 2)
 

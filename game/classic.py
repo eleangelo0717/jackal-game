@@ -1,6 +1,7 @@
 from game.field import Generator, Coordinates
 
 from utils import distance
+import tiles.tile
 
 
 FIELD_DIMENSION = 13
@@ -17,3 +18,11 @@ class ClassicGenerator(Generator):
             return 'SEA'
         return 'GROUND'
 
+
+class ClassicGame(object):
+    def __init__(self):
+        self.tiles = []
+
+    def fillTiles(self):
+        self.tiles += [tiles.tile.Tile() for _ in range(20)]
+        return self.tiles
