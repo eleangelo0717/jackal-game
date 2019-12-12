@@ -3,6 +3,8 @@ import random
 from pack import Pack
 from moves import Move
 
+from ../actions import *
+
 class Direction(object):
     def __init__(self, x, y, angle=0):
         angleFunc = [
