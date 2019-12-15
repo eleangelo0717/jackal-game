@@ -13,9 +13,11 @@ class Pack(object):
         self,
         generator=listGenerator,
         reuseable: bool = False,
+        shuffled: bool = False
     ):
         self._generator = generator
         self._reuseable = reuseable
+        self._shuffled = shuffled
         self.items = []
         self.dropped = []
 
@@ -35,7 +37,10 @@ class Pack(object):
                 self.dropped.append(item)
             return item
         if self._reuseable and (len(self.dropped) + len(self.items)):
-            return self.reload().shuffle().next()
+            self.reload()
+            if self._shuffled:
+                self.shuffle()
+            return self.next()
         return None
 
     def reload(self):

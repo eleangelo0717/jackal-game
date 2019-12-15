@@ -39,10 +39,15 @@ class TestPack(unittest.TestCase):
 
     def test_pack(self):
         g = ClassicGame()
-        t = g.fillTiles()
-        self.assertEqual(len(t), 117)
-        p = Pack(listGenerator(t))
-        self.assertEqual(len(g.tiles), 117)
+        tiles = g.fillTiles()
+        self.assertEqual(len(tiles), 117)
+        p = Pack(listGenerator(tiles))
         i = p.next()
         self.assertEqual(len(p.dropped), 0)
         self.assertEqual(i.className(), 'Tile')
+
+    def test_Field(self):
+        g = ClassicGame()
+        tiles = g.fillTiles()
+        p = Pack(listGenerator(tiles))
+        template = Template(ClassicGenerator())

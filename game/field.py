@@ -50,9 +50,27 @@ class Field(object):
 
     def __init__(self, template, tilePack):
         self.template = template
-        self.titlePack = titlePack
+        self.tilePack = tilePack
+
+    def fieldInfo(self, coordinates: Coordinates):
+        place = self.template.getPlace(coordinates)
+        tile = None
+        return (place, tile)
+
+    def batchFieldInfo(self, c1: Coordinates, c2: Coordinates):
+        x1, x2 = min([c1.x, c2.x]), max([c1.x, c2.x])
+        y1, y2 = min([c1.y, c2.y]), max([c1.y, c2.y])
+        result = {}
+        for x in range(x1, x2+1):
+            for y in range(y1, y2+1):
+                c = Coordinates(x, y)
+                fieldInfo = self.fieldInfo(c)
+                result[c] = {
+                    'place': fieldInfo[0],
+                    'tile': fieldInfo[1]
+                }
+        return result
 
 
 def fieldTypesKeys():
     return list(FIELD_TYPES.keys())
-

@@ -124,12 +124,12 @@ class TileCannibal(Tile):
 
 class TileFort(Tile):
     def __init__(self):
-        Tile.__init__(self)        
+        Tile.__init__(self)
 
 
 class TileFortAborigine(Tile):
     def __init__(self):
-        Tile.__init__(self)        
+        Tile.__init__(self)
 
 
 class TileCarramba(Tile):
@@ -144,12 +144,12 @@ class TileBalloon(Tile):
 
 class TileLighthouse(Tile):
     def __init__(self):
-        Tile.__init__(self)     
+        Tile.__init__(self)
 
 
 class TileBenGunn(Tile):
     def __init__(self):
-        Tile.__init__(self)        
+        Tile.__init__(self)
 
     def activate(self, character):
         p = character.gamer.game.getFreeItem('BenGunn')
@@ -163,7 +163,7 @@ class TileBenGunn(Tile):
 
 class TileMissionary(Tile):
     def __init__(self):
-        Tile.__init__(self)        
+        Tile.__init__(self)
 
     def activate(self, character):
         p = character.gamer.game.getFreeItem('Missionary')
@@ -177,7 +177,7 @@ class TileMissionary(Tile):
 
 class TileFriday(Tile):
     def __init__(self):
-        Tile.__init__(self)     
+        Tile.__init__(self)
 
     def activate(self, character):
         p = character.gamer.game.getFreeItem('Friday')
@@ -191,24 +191,24 @@ class TileFriday(Tile):
 
 class TileBarrel(Tile):
     def __init__(self):
-        Tile.__init__(self)   
+        Tile.__init__(self)
 
 
 class TileCave(Tile):
     def __init__(self):
-        Tile.__init__(self)   
+        Tile.__init__(self)
 
 
 class TileQuake(Tile):
     def __init__(self):
-        Tile.__init__(self)   
+        Tile.__init__(self)
 
 
 class TileJungle(Tile):
     def __init__(self):
-        Tile.__init__(self)  
+        Tile.__init__(self)
 
 
 class TileGrass(Tile):
     def __init__(self):
-        Tile.__init__(self)  
+        Tile.__init__(self)
