@@ -24,4 +24,3 @@ class Tile(object):
 
     def isOpened(self):
         return self._opened
-

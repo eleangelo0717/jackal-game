@@ -5,6 +5,7 @@ from moves import Move
 
 from ../actions import *
 
+
 class Direction(object):
     def __init__(self, x, y, angle=0):
         angleFunc = [
@@ -32,7 +33,6 @@ class TileCard(object):
     
     def action(self, character):
         pass
-
 
 
 class TileCardWhirl(TileCard):
@@ -93,7 +93,7 @@ class TileCardTreasure(TileCard):
 
 class TileCardRow(TileCard):
     def __init__(self, directionsFormulae):
-        angle = random.randint(0,3)
+        angle = random.randint(0, 3)
         TileCard.__init__(self, angle)
         self.directions = []
         for formula in directionsFormulae:

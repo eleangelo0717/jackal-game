@@ -3,7 +3,7 @@ import unittest
 import actions.tile
 import actions.game
 
-from tiles.tile import Tile
+from tiles.main import Tile
 
 
 class TestTile(unittest.TestCase):

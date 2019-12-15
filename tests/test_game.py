@@ -39,10 +39,10 @@ class TestPack(unittest.TestCase):
 
     def test_pack(self):
         g = ClassicGame()
-        p = Pack(listGenerator(g.fillTiles()))
+        t = g.fillTiles()
+        self.assertEqual(len(t), 117)
+        p = Pack(listGenerator(t))
+        self.assertEqual(len(g.tiles), 117)
         i = p.next()
-        self.assertEqual(len(p.dropped), 1)
+        self.assertEqual(len(p.dropped), 0)
         self.assertEqual(i.className(), 'Tile')
-        i = p.next()
-        self.assertEqual(len(p.dropped), 2)
-
