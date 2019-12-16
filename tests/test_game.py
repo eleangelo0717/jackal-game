@@ -48,6 +48,4 @@ class TestPack(unittest.TestCase):
 
     def test_Field(self):
         g = ClassicGame()
-        tiles = g.fillTiles()
-        p = Pack(listGenerator(tiles))
-        template = Template(ClassicGenerator())
+        g.fieldsInfo()

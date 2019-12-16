@@ -1,7 +1,9 @@
 from game.field import Generator, Coordinates, Field, Template
+from game.main import Game
 from pack.main import Pack, listGenerator
 
 from utils import distance
+from game.field import Field
 import tiles.tiles
 
 FIELD_DIMENSION = 13
@@ -19,12 +21,18 @@ class ClassicGenerator(Generator):
         return 'GROUND'
 
 
-class ClassicGame(object):
+class ClassicGame(Game):
     def __init__(self):
         tiles = self.fillTiles()
-        self.field = Field(
+        field = Field(
             template=Template(generator=ClassicGenerator()),
             tilePack=Pack(listGenerator(tiles)))
+        Game.__init__(self, field)
+
+    def fieldsInfo(self):
+        return self.field.batchFieldInfo(
+            Coordinates(0, 0),
+            Coordinates(FIELD_DIMENSION-1, FIELD_DIMENSION-1))
 
     def fillTiles(self):
         items = []
@@ -90,8 +98,3 @@ class ClassicGame(object):
         items += [tiles.tiles.TileFriday()]
 
         return items
-
-    def fieldsInfo(self):
-        return self.field.batchFieldInfo(
-            Coordinates(0, 0),
-            Coordinates(FIELD_DIMENSION-1, FIELD_DIMENSION-1))
