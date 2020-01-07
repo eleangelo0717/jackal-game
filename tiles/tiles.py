@@ -1,17 +1,7 @@
-from tiles.main import Tile
+from common.tile import Tile
+from common.direction import Direction4
 
 import random
-
-
-class Direction(object):
-    def __init__(self, x, y, angle=0):
-        angleFunc = [
-            (x, y),
-            (y, -x),
-            (-x, -y),
-            (-y, x)
-        ]
-        (self.x, self.y) = angleFunc[angle]
 
 
 class TileWhirl(Tile):
@@ -53,7 +43,7 @@ class TileRow(Tile):
         Tile.__init__(self, angle)
         self.directions = []
         for formula in directionsFormulae:
-            direction = Direction(formula[0], formula[1], angle)
+            direction = Direction4(formula[0], formula[1], angle)
             self.directions.append(direction)
 
     def __repr__(self):
@@ -77,7 +67,7 @@ class TileCannon(Tile):
         if angle is None:
             angle = random.randint(0, 3)
         Tile.__init__(self, angle)
-        self.direction = Direction(1, 0, angle)
+        self.direction = Direction4(1, 0, angle)
 
 
 class TileHorse(Tile):

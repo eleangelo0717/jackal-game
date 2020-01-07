@@ -1,7 +1,3 @@
-import actions.tile
-import actions.game
-
-
 class Tile(object):
     def __init__(self, angle=0, opened=False):
         self.angle = angle
@@ -10,14 +6,14 @@ class Tile(object):
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
 
-    def className(self):
+    def getClassName(self):
         return self.__class__.__name__
 
     def onOpen(self):
-        return actions.tile.open
+        return
 
     def onAction(self):
-        return actions.game.passageTransition
+        return
 
     def open(self):
         self._opened = True
