@@ -12,7 +12,6 @@ class Place(object):
 
 
 class Field(object):
-    def __init__(self, places=None):
+    def __init__(self, places={}):
         self.places = places
 
-    

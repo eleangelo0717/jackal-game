@@ -35,11 +35,21 @@ class Move(object):
 
     def setDirection(self, direction: DeltaCoord = None):
         self.__direction = direction
-        self.__checkValues()
+        if (self.__start):
+            self.__destination = Coord(
+                self.__start.x + self.__direction.x,
+                self.__start.y + self.__direction.y)
+
+    def getDestination(self): return self.__destination
 
     def setDestination(self, destination: Coord = None):
         self.__destination = destination
-        self.__checkValues()
+        if (self.__start):
+            self.__direction = Coord(
+                self.__destination.x - self.__start.x,
+                self.__destination.y - self.__start.y)
+
+    destination = property(getDestination, setDestination)
 
     def __checkValues(self):
         if (self.__start):
@@ -52,22 +62,8 @@ class Move(object):
                     self.__destination.x - self.__start.x,
                     self.__destination.y - self.__start.y)
 
-
     def __repr__(self):
         if (self.__start):
             return f"<{self.__class__.__name__} {self.__start}->{self.__destination}>"
         return f"<{self.__class__.__name__} {self.__direction}>"
 
-
-
-class CharacterMove(object):
-    def __init__(self, character, move: Move, payload=None):
-        self.character = character
-        self.move = move
-        self.payload = payload
-
-    def __repr__(self):
-        if (self.payload):
-            return f"<{self.__class__.__name__} {self.character}+{self.payload} {self.move}>"
-
-        return f"<{self.__class__.__name__} {self.character} {self.move}>"

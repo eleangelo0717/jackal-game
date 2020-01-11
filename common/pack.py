@@ -15,9 +15,9 @@ class Pack(object):
         reuseable: bool = False,
         shuffled: bool = False
     ):
-        self._generator = generator
-        self._reuseable = reuseable
-        self._shuffled = shuffled
+        self.__generator = generator
+        self.__reuseable = reuseable
+        self.__shuffled = shuffled
         self.items = []
         self.dropped = []
 
@@ -29,16 +29,16 @@ class Pack(object):
                 item = None
         else:
             try:
-                item = next(self._generator)
+                item = next(self.__generator)
             except StopIteration:
                 item = None
         if item is not None:
-            if self._reuseable:
+            if self.__reuseable:
                 self.dropped.append(item)
             return item
-        if self._reuseable and (len(self.dropped) + len(self.items)):
+        if self.__reuseable and (len(self.dropped) + len(self.items)):
             self.reload()
-            if self._shuffled:
+            if self.__shuffled:
                 self.shuffle()
             return self.next()
         return None
