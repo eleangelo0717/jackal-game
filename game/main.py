@@ -21,9 +21,13 @@ class Game(common.game.Game):
             })
 
     def generatePlace(self, coord: Coord):
+        placeType = self.getPlaceType(coord)
+        tile = None
+        if (placeType == "GROUND"):
+            tile=Tile()
         return Place(
-                placeType=self.getPlaceType(coord),
-                tile=Tile()
+                placeType=placeType,
+                tile=tile
             )
 
     def getPlaceType(self, coord: Coord):
