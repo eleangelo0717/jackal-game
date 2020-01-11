@@ -13,11 +13,14 @@ class Place(object):
         self.tile = tile
 
     def to_json(self):
-        return {
-            'type': self.type,
-            'tile': self.tile,
-            'opened': self.opened
-        }
+        place = {}
+        if (self.type): place['type'] = self.type
+        if (self.tile):
+            if (self.opened):
+                place['tile'] = self.tile
+            else:
+                place['tile'] = True
+        return place
 
 
 class Field(object):
