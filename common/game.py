@@ -22,7 +22,7 @@ class Game(object):
     def to_json(self):
         return {
             'field': self.field,
-            'items': json.dumps(self.items, cls=GameEncoder),
+            'items': self.items,
             'gamers': json.dumps(self.gamers, cls=GameEncoder),
             'status': json.dumps(self.status, cls=GameEncoder)
         }

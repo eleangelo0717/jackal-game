@@ -3,6 +3,7 @@ from common.field import Field, Place
 from common.coordinates import Coord
 from common.utils import distance
 from common.tile import Tile
+from common.item import Item
 
 FIELD_SIZE = 13
 
@@ -10,8 +11,8 @@ class Game(common.game.Game):
     def __init__(self):
         self.size = FIELD_SIZE
         field = self.generateField()
-        items = []
         gamers = [i for i in range(0,4)]
+        items = self.generateItems(gamers)
         common.game.Game.__init__(self, field=field, items=items, gamers=gamers)
         
     def generateField(self):
@@ -39,3 +40,8 @@ class Game(common.game.Game):
             return 'SEA'
         return 'GROUND'
 
+    def generateItems(self, gamers):
+        items = []
+        for gamer in gamers:
+            items += [Item(gamer=gamer) for _ in range(0,4)]
+        return items

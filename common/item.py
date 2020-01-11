@@ -1,11 +1,22 @@
 from common.coordinates import Coord, Move
 
 class Item(object):
-    def __init__(self, coordinates: Coord = None):
+    def __init__(self, coordinates: Coord = None, gamer = None):
         self.coordinates = coordinates
+        self.gamer = gamer
 
     def go(self, coordinates: Coord):
         self.coordinates = coordinates
+
+    def to_json(self):
+        result = {
+            'type': f'{self.__class__.__name__}'
+        }
+        if (self.gamer is not None): result['gamer'] = self.gamer
+        if (self.coordinates):
+            result['x'] = self.coordinates.x
+            result['y'] = self.coordinates.y
+        return result
 
 
 class ItemMove(object):
