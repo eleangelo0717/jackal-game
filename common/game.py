@@ -1,13 +1,7 @@
 from common.field import Field
 from common.item import ItemMove
+from common.utils import GameEncoder
 import json
-
-class GameEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if "to_json" in dir(obj):
-            return obj.to_json()
-
-        return json.JSONEncoder.default(self, obj)
 
 
 class Game(object):
@@ -15,6 +9,7 @@ class Game(object):
         self.field = field
         self.items = items
         self.gamers = gamers
+        self.status = None
 
     def moveItem(self, itemMove: ItemMove):
         if not self.checkMove(itemMove):
@@ -26,9 +21,10 @@ class Game(object):
 
     def to_json(self):
         return {
-            'field': json.dumps(self.field),
-            'items': json.dumps(self.items),
-            'gamers': json.dumps(self.gamers)
+            'field': self.field,
+            'items': json.dumps(self.items, cls=GameEncoder),
+            'gamers': json.dumps(self.gamers, cls=GameEncoder),
+            'status': json.dumps(self.status, cls=GameEncoder)
         }
 
     def dumps(self):
