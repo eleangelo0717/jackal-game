@@ -2,6 +2,7 @@ import common.game
 from common.field import Field, Place
 from common.coordinates import Coord
 from common.utils import distance
+from common.tile import Tile
 
 FIELD_SIZE = 13
 
@@ -14,10 +15,16 @@ class Game(common.game.Game):
         common.game.Game.__init__(self, field=field, items=items, gamers=gamers)
         
     def generateField(self):
-        return Field(places={Coord(x,y): Place(self.getPlaceType(Coord(x,y))) 
+        return Field(places={Coord(x,y): self.generatePlace(Coord(x,y))
             for x in range(0,self.size) 
             for y in range(0,self.size)
             })
+
+    def generatePlace(self, coord: Coord):
+        return Place(
+                placeType=self.getPlaceType(coord),
+                tile=Tile()
+            )
 
     def getPlaceType(self, coord: Coord):
         m = self.size // 2
@@ -27,4 +34,4 @@ class Game(common.game.Game):
         if dx == m or dy == m or (dx == m-1 and dy == m-1):
             return 'SEA'
         return 'GROUND'
-        
+
