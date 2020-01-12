@@ -18,8 +18,6 @@ class Game(object):
         item = self.items.get(itemId)
         if not (item): return False
         itemMove = ItemMove(item, Move(start=item.coordinates, destination=destination))
-        print(destination)
-        print(itemMove.move)
         if not self.checkMove(itemMove):
            return False
         itemMove.accept()
