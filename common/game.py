@@ -1,6 +1,5 @@
 from common.field import Field
 from common.item import ItemMove
-from common.utils import GameEncoder
 from common.coordinates import Coord, Move
 import json
 
@@ -38,9 +37,6 @@ class Game(object):
             'status': self.status,
             'turn': self.turn
         }
-
-    def dumps(self):
-        return json.dumps(self, cls=GameEncoder)
 
     def logMove(self, itemMove: ItemMove):
         logRecord = {
