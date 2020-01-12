@@ -19,10 +19,11 @@ def games():
 @app.route('/games/<id>', methods=['GET', 'POST'])
 def game(id):
     game = GS.get(id, GameServer())
-    if request.method == 'POST':
-        item = int(request.form.get('item'))
-        x = int(request.form.get('x'))
-        y = int(request.form.get('y'))
+    if (request.method == 'POST') and (request.is_json):
+        data = request.get_json()
+        item = int(data.get('item'))
+        x = int(data.get('x'))
+        y = int(data.get('y'))
         success = game.move(item, x, y)
         result = game.to_json()
         result['success'] = success
