@@ -14,9 +14,18 @@ def games():
     return f'{len(GS)}'
 
 
-@app.route('/games/<id>')
+@app.route('/games/<id>', methods=['GET', 'POST'])
 def game(id):
     game = GS.get(id, GameServer())
+    if request.method == 'POST':
+        item = request.form.get('item')
+        x = request.form.get('x')
+        y = request.form.get('y')
+        success = game.move(item, x, y)
+        result = game.to_json()
+        result['success'] = success
+        if not (success):
+            return jsonify(result)
     return jsonify(
         game.to_json()
     )

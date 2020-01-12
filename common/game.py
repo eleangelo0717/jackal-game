@@ -5,7 +5,7 @@ import json
 
 
 class Game(object):
-    def __init__(self, field: Field = {}, items = {}, gamers = []):
+    def __init__(self, field: Field = {}, items={}, gamers=[]):
         self.field = field
         self.items = items
         self.gamers = gamers
@@ -15,12 +15,15 @@ class Game(object):
 
     def moveItem(self, itemId: int, destination: Coord):
         item = self.items.get(itemId)
-        if not (item): return False
-        itemMove = ItemMove(item, Move(start=item.coordinates, destination=destination))
+        if not (item):
+            return False
+        itemMove = ItemMove(item, Move(
+            start=item.coordinates, destination=destination))
         if not self.checkMove(itemMove):
-           return False
+            return False
         itemMove.accept()
         self.logMove(itemMove)
+        return True
 
     def checkMove(self, itemMove: ItemMove):
         return True
