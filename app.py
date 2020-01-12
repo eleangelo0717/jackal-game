@@ -1,9 +1,11 @@
 from flask import Flask, escape, request, jsonify
+from flask_cors import CORS
 
 from gameserver import GameServer
 from common.utils import GameEncoder
 
 app = Flask(__name__)
+CORS(app)
 app.json_encoder = GameEncoder
 
 GS = {}
