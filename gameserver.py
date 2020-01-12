@@ -8,7 +8,7 @@ class GameServer(object):
         self.game = Game()
         self.ts = datetime.datetime.now()
 
-    def move(self, item, x, y):
+    def move(self, item: int, x: int, y: int):
         return self.game.moveItem(item, Coord(x, y))
 
     def to_json(self):

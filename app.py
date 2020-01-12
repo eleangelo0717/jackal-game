@@ -18,9 +18,9 @@ def games():
 def game(id):
     game = GS.get(id, GameServer())
     if request.method == 'POST':
-        item = request.form.get('item')
-        x = request.form.get('x')
-        y = request.form.get('y')
+        item = int(request.form.get('item'))
+        x = int(request.form.get('x'))
+        y = int(request.form.get('y'))
         success = game.move(item, x, y)
         result = game.to_json()
         result['success'] = success
