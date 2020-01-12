@@ -3,15 +3,18 @@ from common.field import Field, Place
 from common.coordinates import Coord
 from common.utils import distance
 from common.tile import Tile
-from common.item import Item
+from game.items import Ship, Pirate, Coin
 
 FIELD_SIZE = 13
+GAMERS = 4
+PIRATES = 3
 
 class Game(common.game.Game):
     def __init__(self):
         self.size = FIELD_SIZE
+        self.middle = FIELD_SIZE // 2
         field = self.generateField()
-        gamers = [i for i in range(0,4)]
+        gamers = [i for i in range(0, GAMERS)]
         items = self.generateItems(gamers)
         common.game.Game.__init__(self, field=field, items=items, gamers=gamers)
         
@@ -32,16 +35,25 @@ class Game(common.game.Game):
             )
 
     def getPlaceType(self, coord: Coord):
-        m = self.size // 2
-        (dx, dy) = (distance(m, coord.x), distance(m, coord.y))
-        if dx > m or dy > m or (dx == m and dy == m):
+        (dx, dy) = (distance(self.middle, coord.x), distance(self.middle, coord.y))
+        if dx > self.middle or dy > self.middle or (dx == self.middle and dy == self.middle):
             return 'EXCLUDED'
-        if dx == m or dy == m or (dx == m-1 and dy == m-1):
+        if dx == self.middle or dy == self.middle or (dx == self.middle-1 and dy == self.middle-1):
             return 'SEA'
         return 'GROUND'
 
     def generateItems(self, gamers):
         items = []
         for gamer in gamers:
-            items += [Item(gamer=gamer) for _ in range(0,4)]
-        return items
+            items += [Ship(gamer=gamer, coordinates=self.getStartCoord(gamer)) for _ in range(0, 1)]
+            items += [Pirate(gamer=gamer, coordinates=self.getStartCoord(gamer)) for _ in range(0, PIRATES)]
+        return {i: val for i, val in enumerate(items)}
+
+    def getStartCoord(self, gamer):
+        places = [
+            Coord(self.middle,0),
+            Coord(0,self.middle),
+            Coord(self.middle,self.size-1),
+            Coord(self.size-1, self.middle)
+        ]
+        return places[gamer % GAMERS]

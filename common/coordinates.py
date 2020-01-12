@@ -26,7 +26,7 @@ class Move(object):
     def __init__(self, direction: DeltaCoord = None, start: Coord = None, destination: Coord = None):
         self.__destination = destination
         self.__start = start
-        self.__direction = direction or DeltaCoord(0,0)
+        self.__direction = direction 
         self.__checkValues()
 
     def setStart(self, start: Coord = None):
