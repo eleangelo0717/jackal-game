@@ -4,6 +4,6 @@ COPY . /src/
 
 RUN pip install -r /src/requirements.txt
 
-EXPOSE 5000
+EXPOSE 8000
 
-ENTRYPOINT ["python", "/src/app.py"]
+ENTRYPOINT ["python", "/src/gameserver.py"]
