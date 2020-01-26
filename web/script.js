@@ -88,7 +88,11 @@ function fillItems(field) {
         if (!(div)) {
             div = document.createElement("div")
 
-            div.setAttribute("class", `item ${item.type} gamer_${item.gamer} hidden`)
+            div.setAttribute("class", `item ${item.type} hidden`)
+            if (item.gamer) {
+                div.setAttribute("gamer", item.gamer)
+                div.classList.add(`gamer_${item.gamer}`)
+            }
             div.setAttribute("id", generateItemID(key))
             if (item.type) {
                 let img = document.createElement("img")
@@ -109,7 +113,8 @@ function fillItems(field) {
                         div.classList.add('payload')
                         break
                 }
-                img.addEventListener('click', function (event) { selectItem(event) }, false)
+                img.addEventListener('click', function (event) { clickItem(event) }, false)
+                div.setAttribute("type", item.type)
                 div.appendChild(img)
             }
             field.appendChild(div)
@@ -182,23 +187,12 @@ function moveItemStage2(item, place) {
     place.appendChild(item)
 }
 
-function selectItem(e) {
-    console.log(e)
-    let targetItem = e.target.parentNode
-    if (selectedItem) {
-        if (selectedItem.parentNode === targetItem.parentNode) {
-            if (e.altKey) {
-                selectNextPayloadInPlace()
-            } else {
-                selectNextItemInPlace()
-            }
-        } else {
-            placeItem(selectedItem, targetItem.parentNode, true)
-        }
+function clickItem(e) {
+    let place = e.target.parentNode.parentNode
+    if (selectedItem && selectedItem.parentNode !== place) {
+        placeItem(selectedItem, place, true)
     } else {
-        if (targetItem.classList.contains('Pirate')) {
-            setItemSelected(targetItem)
-        }
+        selectNextItemInPlace(place)
     }
 }
 
@@ -233,17 +227,48 @@ function getItemGamer(item) {
     return c.length && c[0]
 }
 
-function selectNextItemInPlace() {
-    let pirates = Array.from(selectedItem.parentNode.getElementsByClassName('Pirate'))
-    for (let i in pirates) {
-        if (pirates[i] === selectedItem) {
-            selectedItem.classList.remove('selected')
-            if (i > 0) {
-                setItemSelected(pirates[i - 1])
-            } else {
-                clearSelection()
-            }
+function loopItemsByAttribute(items, current, attribute) {
+    if (!items.length) {
+        return
+    }
+    let currentIndex = items.indexOf(current)
+    if (currentIndex == -1) {
+        return items[0]
+    }
+    if (currentIndex >= items.length) {
+        return
+    }
+    for (let i = currentIndex + 1; i < items.length; i++) {
+        if (items[i].getAttribute(attribute) !== current.getAttribute(attribute)) {
+            return items[i]
         }
+    }
+}
+
+function selectNextItemInPlace(place) {
+    let pirates = Array.from(place.getElementsByClassName('Pirate'))
+        .sort((a, b) => a.id > b.id ? 1 : -1)
+    let payloads = Array.from(place.getElementsByClassName('payload'))
+        .sort((a, b) => a.id > b.id ? 1 : -1)
+    let pirate = loopItemsByAttribute(pirates, selectedItem, "gamer")
+    let payload = selectedPayload
+    if (selectedItem && !pirate && payloads.length) {
+        pirate = pirates[0]
+        payload = loopItemsByAttribute(payloads, selectedPayload, "type")
+        if (selectedPayload && !payload) {
+            payload = ''
+            pirate = ''
+        }
+    }
+    if (pirate) {
+        setItemSelected(pirate)
+        if (payload) {
+            setPayloadSelected(payload)
+        } else {
+            selectedPayload = ''
+        }
+    } else {
+        clearSelection()
     }
 }
 
@@ -252,6 +277,9 @@ function selectNextPayloadInPlace() {
         return
     }
     let payloads = Array.from(selectedItem.parentNode.getElementsByClassName('payload'))
+        .sort((a, b) => a.id > b.id ? 1 : -1)
+    payloadTypeOrder = ['Ship', 'Chest', 'Coin']
+    currentTypeIndex = selectedPayload && selectedPayload.getAttribute("type") && payloadTypeOrder.indexOf(currentType)
     if (!(selectedPayload) && payloads.length) {
         setPayloadSelected(payloads[payloads.length - 1])
         return
@@ -291,19 +319,29 @@ function clearPayloadSelection() {
 }
 
 function repaintItems() {
-    let items = Array.from(document.getElementById("field").getElementsByClassName('item'))
+    let items = Array.from(document.getElementById("field").getElementsByClassName('item')).filter(x => !x.classList.contains("hidden"))
     items.map(x => {
         let pirates = Array.from(x.parentNode.getElementsByClassName('Pirate'))
         if (pirates.length > 1) {
-            x.classList.add('multi')
-            pirates.map((x, i) => {
-                x.style.left = `${i * 40 / pirates.length}%`
-                x.style.bottom = `${i * 15 / pirates.length}%`
+            pirates.map((p, i) => {
+                p.classList.add('multi')
+                p.style.left = `${i * 40 / pirates.length}%`
+                p.style.bottom = `${(pirates.length - i) * 15 / pirates.length}%`
             })
         } else {
             x.classList.remove('multi')
-            x.style.left = 0
-            x.style.bottom = 0
+            x.style.left = '0px'
+            x.style.bottom = '0px'
+        }
+        let coins = Array.from(x.parentNode.getElementsByClassName('Coin'))
+        if (coins.length > 1) {
+            coins.map((p, i) => {
+                p.classList.add('multi')
+                p.style.bottom = `${i * 5}%`
+            })
+        } else {
+            x.classList.remove('multi')
+            x.style.bottom = '0px'
         }
     })
 }

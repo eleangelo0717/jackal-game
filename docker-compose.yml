@@ -6,6 +6,8 @@ services:
     build:
       dockerfile: "${PWD}/Dockerfile"
       context: "${PWD}"
+    volumes:
+      - "${PWD}:/src"
     expose:
       - "8000"
     ports:
