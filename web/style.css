@@ -73,10 +73,14 @@ img{
     z-index: 3;
 }
 
-.Coin, .Chest {
+.Ship {
+    z-index: 1;
+}
+
+.Coin {
     width: 30%;
-    right: 0;
     bottom: 0;
+    z-index: 1;
 }
 
 .Chest {
@@ -96,16 +100,6 @@ img{
     z-index: 10;
 }
 
-.tooltip {
-    display: none; 
-    background: #C8C8C8;
-    margin-left: 28px;
-    padding: 10px;
-    position: absolute;
-    z-index: 1000;
-    width:200px;
-    height:100px;
-}
 
 .place:hover .tooltip { 
     display: block;

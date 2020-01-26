@@ -82,6 +82,11 @@ class Game(common.game.Game):
         return places[gamer % GAMERS]
 
     def moveItem(self, itemId: int, destination: Coord):
+        item = self.items.get(itemId)
+        if not item:
+            return False
+        if not self.checkWhirl(item):
+            return True
         common.game.Game.moveItem(self, itemId, destination)
         self.openPlace(destination)
 
@@ -146,7 +151,7 @@ class Game(common.game.Game):
 
         items += [TileBarrel() for _ in range(4)]
 
-        random.shuffle(items)
+        # random.shuffle(items)
 
         return items
 
@@ -165,3 +170,15 @@ class Game(common.game.Game):
         self.items[keys[0]].coordinates = coord
         return True
 
+    def checkWhirl(self, item):
+        if not item.coordinates:
+            return True
+        place = self.field.places[item.coordinates]
+        if place.tile and place.tile.getClassName() == 'TileWhirl':
+            if item.step < (place.tile.steps - 1):
+                item.step += 1
+                return False
+            if item.step == place.tile.steps:
+                item.step = 0
+        return True
+        

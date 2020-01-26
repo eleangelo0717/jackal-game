@@ -1,4 +1,5 @@
 from common.item import Item, Character
+from common.coordinates import Coord
 
 
 class Ship(Item):
@@ -6,7 +7,10 @@ class Ship(Item):
 
 
 class Pirate(Character):
-    pass
+    def __init__(self, coordinates: Coord = None, gamer=None):
+        Character.__init__(self, coordinates, gamer)
+        self.step = 0
+        self.locked = False
 
 
 class Coin(Item):

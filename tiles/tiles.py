@@ -32,13 +32,13 @@ class TileCoins(Tile):
 
 
 class TileWhirl(Tile):
-    def __init__(self, kind=0):
+    def __init__(self, steps=0):
         Tile.__init__(self)
-        self.kind = kind
+        self.steps = steps
 
     def to_json(self):
         result = {
-            'type': f"{self.getClassName()}{self.kind}"
+            'type': f"{self.getClassName()}{self.steps}"
         }
         return result
 

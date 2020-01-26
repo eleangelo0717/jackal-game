@@ -127,7 +127,6 @@ function fillItems(field) {
     repaintItems()
 }
 
-
 function selectPlace(e) {
     if (selectedItem) {
         placeItem(selectedItem, e.target.parentNode, true)
@@ -182,8 +181,9 @@ function moveItemStage1(item, placeRect) {
 }
 
 function moveItemStage2(item, place) {
-    item.style.bottom = 0
-    item.style.left = 0
+    item.style.bottom = ''
+    item.style.left = ''
+    item.style.right = ''
     place.appendChild(item)
 }
 
@@ -233,12 +233,12 @@ function loopItemsByAttribute(items, current, attribute) {
     }
     let currentIndex = items.indexOf(current)
     if (currentIndex == -1) {
-        return items[0]
+        return items[items.length - 1]
     }
-    if (currentIndex >= items.length) {
+    if (currentIndex < 1) {
         return
     }
-    for (let i = currentIndex + 1; i < items.length; i++) {
+    for (let i = currentIndex - 1; i >= 0; i--) {
         if (items[i].getAttribute(attribute) !== current.getAttribute(attribute)) {
             return items[i]
         }
@@ -253,7 +253,7 @@ function selectNextItemInPlace(place) {
     let pirate = loopItemsByAttribute(pirates, selectedItem, "gamer")
     let payload = selectedPayload
     if (selectedItem && !pirate && payloads.length) {
-        pirate = pirates[0]
+        pirate = pirates[pirates.length - 1]
         payload = loopItemsByAttribute(payloads, selectedPayload, "type")
         if (selectedPayload && !payload) {
             payload = ''
@@ -318,32 +318,37 @@ function clearPayloadSelection() {
     })
 }
 
-function repaintItems() {
-    let items = Array.from(document.getElementById("field").getElementsByClassName('item')).filter(x => !x.classList.contains("hidden"))
-    items.map(x => {
-        let pirates = Array.from(x.parentNode.getElementsByClassName('Pirate'))
-        if (pirates.length > 1) {
-            pirates.map((p, i) => {
-                p.classList.add('multi')
-                p.style.left = `${i * 40 / pirates.length}%`
-                p.style.bottom = `${(pirates.length - i) * 15 / pirates.length}%`
-            })
-        } else {
-            x.classList.remove('multi')
-            x.style.left = '0px'
-            x.style.bottom = '0px'
+function repaintItems(places) {
+    if (!(places && places.length)) {
+        places = Array.from(document.getElementById("field").getElementsByClassName("place"))
+    }
+    for (let place of places) {
+        let pirates = Array.from(place.getElementsByClassName('Pirate'))
+        if (pirates.length > 0) {
+            for (let i in pirates) {
+                let p = pirates[i]
+                if (pirates.length > 1) {
+                    p.classList.add('multi')
+                } else {
+                    p.classList.remove('multi')
+                }
+                p.style.right = `${((pirates.length - i - 1) * 40) / pirates.length}%`
+                p.style.bottom = `${((pirates.length - i - 1) * 15) / pirates.length}%`
+            }
         }
-        let coins = Array.from(x.parentNode.getElementsByClassName('Coin'))
-        if (coins.length > 1) {
+        let coins = Array.from(place.getElementsByClassName('Coin'))
+        if (coins.length > 0) {
             coins.map((p, i) => {
-                p.classList.add('multi')
-                p.style.bottom = `${i * 5}%`
+                if (coins.length > 1) {
+                    p.classList.add('multi')
+                } else {
+                    p.classList.remove('multi')
+                }
+                p.style.bottom = `${(i % 10) * 5}%`
+                p.style.left = `${(i / 10 | 0) * 10}%`
             })
-        } else {
-            x.classList.remove('multi')
-            x.style.bottom = '0px'
         }
-    })
+    }
 }
 
 function generateItemID(key) {
