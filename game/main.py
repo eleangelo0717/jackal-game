@@ -178,7 +178,7 @@ class Game(common.game.Game):
             if item.step < (place.tile.steps - 1):
                 item.step += 1
                 return False
-            if item.step == place.tile.steps:
+            if item.step == (place.tile.steps - 1):
                 item.step = 0
         return True
         
