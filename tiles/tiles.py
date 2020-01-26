@@ -1,14 +1,46 @@
 from common.tile import Tile
-from common.direction import Direction4
+from common.coordinates import DeltaCoord
+
+from functools import partial
 
 
-class TileChest(Tile):
+class TileEmpty(Tile):
+    def __init__(self, kind=0):
+        Tile.__init__(self)
+        self.kind = kind
+
+    def to_json(self):
+        result = {
+            'type': f"{self.getClassName()}{self.kind}"
+        }
+        return result
+
+
+class TileCoins(Tile):
     def __init__(self, money):
         Tile.__init__(self)
         self.money = money
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} money:{self.money}>"
+    def onOpen(self, game):
+        return partial(game.placeCoins, money=self.money)
+
+    def to_json(self):
+        result = {
+            'type': f"{self.getClassName()}{self.money}"
+        }
+        return result
+
+
+class TileWhirl(Tile):
+    def __init__(self, kind=0):
+        Tile.__init__(self)
+        self.kind = kind
+
+    def to_json(self):
+        result = {
+            'type': f"{self.getClassName()}{self.kind}"
+        }
+        return result
 
 
 class TileRum(Tile):
@@ -16,32 +48,32 @@ class TileRum(Tile):
         Tile.__init__(self)
         self.bottles = bottles
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} bottles:{self.bottles}>"
+    def to_json(self):
+        result = {
+            'type': f"{self.getClassName()}{self.bottles}"
+        }
+        return result
 
 
 class TileTreasure(Tile):
     def __init__(self):
         Tile.__init__(self)
 
+    def onOpen(self, game):
+        return partial(game.placeChest)
 
-class TileRow(Tile):
-    def __init__(self, directionsFormulae, angle=0):
+
+class TileArrow(Tile):
+    def __init__(self, directions: [DeltaCoord], angle=0):
         Tile.__init__(self, angle)
-        self.directions = []
-        for formula in directionsFormulae:
-            direction = Direction4(formula[0], formula[1], angle)
-            self.directions.append(direction)
+        self.directions = directions
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} directions:{len(self.directions)}>"
+    def to_json(self):
 
-    def activate(self, character):
-        self.action(character)
-        return 1
-
-    def action(self, character):
-        return 0
+        result = {
+            'type': f"{self.getClassName()}{len(self.directions)}{self.directions[0].y}"
+        }
+        return result
 
 
 class TileAirplane(Tile):
@@ -52,26 +84,19 @@ class TileAirplane(Tile):
 class TileCannon(Tile):
     def __init__(self, angle=0):
         Tile.__init__(self, angle)
-        self.direction = Direction4(1, 0, angle)
 
 
 class TileHorse(Tile):
     def __init__(self):
         Tile.__init__(self)
 
-    def activate(self, character):
-        return 1
-
 
 class TileIce(Tile):
     def __init__(self):
         Tile.__init__(self)
 
-    def action(self, character):
-        return
 
-
-class TileTrap(Tile):
+class TilePitfall(Tile):
     def __init__(self):
         Tile.__init__(self)
 
@@ -80,17 +105,10 @@ class TileCroco(Tile):
     def __init__(self):
         Tile.__init__(self)
 
-    def action(self, character):
-        return
-
 
 class TileCannibal(Tile):
     def __init__(self):
         Tile.__init__(self)
-
-    def action(self, character):
-        (character.x, character.y) = (None, None)
-        return 0
 
 
 class TileFort(Tile):
@@ -122,24 +140,15 @@ class TileBenGunn(Tile):
     def __init__(self):
         Tile.__init__(self)
 
-    def activate(self, character):
-        return
-
 
 class TileMissionary(Tile):
     def __init__(self):
         Tile.__init__(self)
 
-    def activate(self, character):
-        return
-
 
 class TileFriday(Tile):
     def __init__(self):
         Tile.__init__(self)
-
-    def activate(self, character):
-        return
 
 
 class TileBarrel(Tile):

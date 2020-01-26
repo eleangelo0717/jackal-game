@@ -53,10 +53,17 @@ class Handler(BaseHTTPRequestHandler):
         self.data_string = self.rfile.read(int(self.headers['Content-Length']))
 
         data = json.loads(self.data_string)
-        item = int(data.get('item'))
-        x = int(data.get('x'))
-        y = int(data.get('y'))
-        success = game.move(item, x, y)
+        if isinstance(data, list):
+            for m in data:
+                item = int(m.get('item'))
+                x = int(m.get('x'))
+                y = int(m.get('y'))
+                success = game.move(item, x, y)
+        else:        
+            item = int(data.get('item'))
+            x = int(data.get('x'))
+            y = int(data.get('y'))
+            success = game.move(item, x, y)
         result = game.to_json()
         result['success'] = success
 

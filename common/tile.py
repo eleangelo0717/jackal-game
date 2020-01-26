@@ -9,7 +9,8 @@ class Tile(object):
     def getClassName(self):
         return self.__class__.__name__
 
-    def onOpen(self):
+    def onOpen(self, game):
+        print('Open', self, game)
         return
 
     def onAction(self):
@@ -20,3 +21,9 @@ class Tile(object):
 
     def isOpened(self):
         return self._opened
+
+    def to_json(self):
+        result = {
+            'type': self.getClassName()
+        }
+        return result

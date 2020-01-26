@@ -1,5 +1,5 @@
 from common.field import Field
-from common.item import ItemMove
+from common.item import ItemMove, Item
 from common.coordinates import Coord, Move
 import json
 
@@ -24,6 +24,14 @@ class Game(object):
         itemMove.accept()
         self.logMove(itemMove)
         return True
+
+    def newItem(self, item: Item):
+        maxKey = max(self.items.keys())
+        if (maxKey):
+            key = maxKey+1
+        else:
+            key = 0
+        self.items[key] = item
 
     def checkMove(self, itemMove: ItemMove):
         return True
@@ -55,3 +63,9 @@ class Game(object):
         self.log += [logRecord]
         print(logRecord)
         return logRecord
+
+    def getUnplacedItemKeys(self, itemClass):
+        return [key for key in self.items if (
+            self.items[key].getClassName() == itemClass
+            and (not self.items[key].coordinates)
+        )]
