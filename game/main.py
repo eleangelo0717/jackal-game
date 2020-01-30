@@ -85,7 +85,7 @@ class Game(common.game.Game):
         item = self.items.get(itemId)
         if not item:
             return False
-        if not self.checkWhirl(item):
+        if not self.checkWhirl(item, destination):
             return True
         common.game.Game.moveItem(self, itemId, destination)
         self.openPlace(destination)
@@ -151,7 +151,7 @@ class Game(common.game.Game):
 
         items += [TileBarrel() for _ in range(4)]
 
-        # random.shuffle(items)
+        random.shuffle(items)
 
         return items
 
@@ -170,8 +170,14 @@ class Game(common.game.Game):
         self.items[keys[0]].coordinates = coord
         return True
 
-    def checkWhirl(self, item):
+    def checkWhirl(self, item, destination: Coord):
         if not item.coordinates:
+            return True
+        ship = self.items[[i for i in self.items \
+            if self.items[i].gamer == item.gamer \
+            and self.items[i].getClassName() == item.getClassName()][0]]
+        if ship.coordinates == destination:
+            item.step = 0
             return True
         place = self.field.places[item.coordinates]
         if place.tile and place.tile.getClassName() == 'TileWhirl':

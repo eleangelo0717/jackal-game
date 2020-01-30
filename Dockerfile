@@ -1,6 +1,6 @@
-FROM python:alpine 
+FROM python:latest 
 
-COPY . /src/
+COPY requirements.txt /src/requirements.txt
 
 RUN pip install -r /src/requirements.txt
 

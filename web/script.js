@@ -5,6 +5,23 @@ let selectedItem = ''
 let selectedPayload = ''
 let api_url = '/api/'
 
+
+let s = new WebSocket(`ws://jackal.flas.ga/api/ws`)
+
+s.onopen = function(e) {
+    s.send('{"connect": 1}')
+    s.onmessage = function(e) {
+        let data = JSON.parse(e.data)
+        if (data && data.field) {
+            serverdata = data
+            refresh()
+        }
+    }
+    s.onclose = function(e) {
+        console.log('Closed')
+    }
+}
+
 function getData() {
     fetch(api_url, {
         cache: 'no-cache',
@@ -39,25 +56,8 @@ function sendMoveData(itemId, coord, payloadIds) {
             }
         }
     }
-    fetch(api_url, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        cache: 'no-cache',
-    })
-        .then(response => {
-            const contentType = response.headers.get('content-type')
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new TypeError("Oops, we haven't got JSON!")
-            }
-            return response.json()
-        })
-        .then(data => {
-            serverdata = data
-            refresh()
-        })
+
+    s.send(JSON.stringify(data))
 }
 
 function refresh() {
@@ -87,9 +87,8 @@ function fillItems(field) {
         let div = document.getElementById(generateItemID(key))
         if (!(div)) {
             div = document.createElement("div")
-
             div.setAttribute("class", `item ${item.type} hidden`)
-            if (item.gamer) {
+            if (typeof item.gamer !== "undefined") {
                 div.setAttribute("gamer", item.gamer)
                 div.classList.add(`gamer_${item.gamer}`)
             }
@@ -122,6 +121,11 @@ function fillItems(field) {
         if (placeID) {
             let place = document.getElementById(placeID)
             placeItem(div, place)
+        }
+        if (item.step > -1) {
+            div.setAttribute("step", item.step)
+        } else {
+            div.removeAttribute("step")
         }
     }
     repaintItems()
@@ -227,7 +231,7 @@ function getItemGamer(item) {
     return c.length && c[0]
 }
 
-function loopItemsByAttribute(items, current, attribute) {
+function loopItemsByAttribute(items, current, attributes) {
     if (!items.length) {
         return
     }
@@ -239,7 +243,10 @@ function loopItemsByAttribute(items, current, attribute) {
         return
     }
     for (let i = currentIndex - 1; i >= 0; i--) {
-        if (items[i].getAttribute(attribute) !== current.getAttribute(attribute)) {
+        if (!(attributes
+            .map(attribute => items[i].getAttribute(attribute) === current.getAttribute(attribute))
+            .reduce((acc, cur) => { return acc && cur }, true)
+        )) {
             return items[i]
         }
     }
@@ -250,11 +257,11 @@ function selectNextItemInPlace(place) {
         .sort((a, b) => a.id > b.id ? 1 : -1)
     let payloads = Array.from(place.getElementsByClassName('payload'))
         .sort((a, b) => a.id > b.id ? 1 : -1)
-    let pirate = loopItemsByAttribute(pirates, selectedItem, "gamer")
+    let pirate = loopItemsByAttribute(pirates, selectedItem, ["gamer", "step"])
     let payload = selectedPayload
     if (selectedItem && !pirate && payloads.length) {
         pirate = pirates[pirates.length - 1]
-        payload = loopItemsByAttribute(payloads, selectedPayload, "type")
+        payload = loopItemsByAttribute(payloads, selectedPayload, ["type"])
         if (selectedPayload && !payload) {
             payload = ''
             pirate = ''
@@ -269,30 +276,6 @@ function selectNextItemInPlace(place) {
         }
     } else {
         clearSelection()
-    }
-}
-
-function selectNextPayloadInPlace() {
-    if (!(selectedItem)) {
-        return
-    }
-    let payloads = Array.from(selectedItem.parentNode.getElementsByClassName('payload'))
-        .sort((a, b) => a.id > b.id ? 1 : -1)
-    payloadTypeOrder = ['Ship', 'Chest', 'Coin']
-    currentTypeIndex = selectedPayload && selectedPayload.getAttribute("type") && payloadTypeOrder.indexOf(currentType)
-    if (!(selectedPayload) && payloads.length) {
-        setPayloadSelected(payloads[payloads.length - 1])
-        return
-    }
-    for (let i in payloads) {
-        if (payloads[i] === selectedPayload) {
-            selectedPayload.classList.remove('selected')
-            if (i > 0) {
-                setPayloadSelected(payloads[i - 1])
-            } else {
-                clearPayloadSelection()
-            }
-        }
     }
 }
 
@@ -322,18 +305,38 @@ function repaintItems(places) {
     if (!(places && places.length)) {
         places = Array.from(document.getElementById("field").getElementsByClassName("place"))
     }
+    const wirlPlaces = [
+        [0, 0],
+        [0, 25],
+        [0, 50],
+        [50, 50],
+        [50, 25]
+    ]
     for (let place of places) {
         let pirates = Array.from(place.getElementsByClassName('Pirate'))
         if (pirates.length > 0) {
-            for (let i in pirates) {
-                let p = pirates[i]
-                if (pirates.length > 1) {
-                    p.classList.add('multi')
-                } else {
-                    p.classList.remove('multi')
+            if (place.getAttribute("type") && place.getAttribute("type").indexOf("TileWhirl") > -1) {
+                for (let step = 0; step < 5; step++) {
+                    let whirlStep = pirates.filter(x => x.getAttribute("step") == step)
+                    for (let i in whirlStep) {
+                        let p = whirlStep[i]
+                        p.classList.add("whirl")
+                        p.style.right = `${(wirlPlaces[step][0]) + (((whirlStep.length - i - 1) * 10) / whirlStep.length)}%`
+                        p.style.bottom = `${(wirlPlaces[step][1]) + (((whirlStep.length - i - 1) * 2) / whirlStep.length)}%`
+                    }
                 }
-                p.style.right = `${((pirates.length - i - 1) * 40) / pirates.length}%`
-                p.style.bottom = `${((pirates.length - i - 1) * 15) / pirates.length}%`
+            } else {
+                for (let i in pirates) {
+                    let p = pirates[i]
+                    p.classList.remove("whirl")
+                    if (pirates.length > 1) {
+                        p.classList.add('multi')
+                    } else {
+                        p.classList.remove('multi')
+                    }
+                    p.style.right = `${((pirates.length - i - 1) * 40) / pirates.length}%`
+                    p.style.bottom = `${((pirates.length - i - 1) * 15) / pirates.length}%`
+                }
             }
         }
         let coins = Array.from(place.getElementsByClassName('Coin'))
@@ -350,6 +353,7 @@ function repaintItems(places) {
         }
     }
 }
+
 
 function generateItemID(key) {
     if (typeof (key) !== 'undefined') {
@@ -376,6 +380,11 @@ function refreshField(field) {
                 if (placeData.orientation) {
                     place.classList.add(`rotate${placeData.orientation}`)
                 }
+            }
+            if (placeData.tile && placeData.tile.type) {
+                place.setAttribute("type", placeData.tile.type)
+            } else {
+                place.removeAttribute("type")
             }
         }
     }
@@ -421,7 +430,7 @@ function newTile(row, col, data) {
 
 function init() {
     getData()
-    setInterval(function () { getData() }, 5000);
+    setInterval(function () { getData() }, 600000);
 }
 
 function toKebabCase(s) {

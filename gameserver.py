@@ -3,11 +3,16 @@ from common.coordinates import Coord
 from common.utils import GameEncoder
 import datetime
 import json
-import urllib
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import asyncio
+from aiohttp import web, WSCloseCode, WSMsgType
+from faker import Faker
+
+import logging
+
 
 GS = {}
+log = logging.getLogger(__name__)
 
 
 class GameServer(object):
@@ -24,61 +29,104 @@ class GameServer(object):
         return info
 
 
-class Handler(BaseHTTPRequestHandler):
+def dumps(data):
+    return json.dumps(data, cls=GameEncoder)
 
-    def _set_headers(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
 
-    def do_OPTIONS(self):
-        self.send_response(200, "ok")
-        self.send_header('Access-Control-Allow-Origin',
-                         '*')
-        self.send_header("Access-Control-Allow-Headers",
-                         "Origin, X-Requested-With, Content-Type, Accept")
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.end_headers()
-
-    def do_HEAD(self):
-        self._set_headers()
-
-    def do_GET(self):
-        self._set_headers()
-        self.wfile.write(json.dumps(game.to_json(), cls=GameEncoder).encode())
-
-    def do_POST(self):
-        self._set_headers()
-        self.data_string = self.rfile.read(int(self.headers['Content-Length']))
-
-        data = json.loads(self.data_string)
-        if isinstance(data, list):
-            for m in data:
-                item = int(m.get('item'))
-                x = int(m.get('x'))
-                y = int(m.get('y'))
-                success = game.move(item, x, y)
-        else:        
-            item = int(data.get('item'))
-            x = int(data.get('x'))
-            y = int(data.get('y'))
+def processData(game, data):
+    if isinstance(data, list):
+        for m in data:
+            item = int(m.get('item'))
+            x = int(m.get('x'))
+            y = int(m.get('y'))
             success = game.move(item, x, y)
-        result = game.to_json()
-        result['success'] = success
-
-        self.wfile.write(json.dumps(result, cls=GameEncoder).encode())
-
-
-def run(server_class=HTTPServer, handler_class=Handler, port=8000):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-
-    print(f'Starting httpd on port {port}...')
-    httpd.serve_forever()
+    else:
+        item = int(data.get('item'))
+        x = int(data.get('x'))
+        y = int(data.get('y'))
+        success = game.move(item, x, y)
+    result = game.to_json()
+    result['success'] = success
+    return result
 
 
-game = GS.get(id, GameServer())
+async def http_get_handler(request):
+    return web.json_response(request.app['game'].to_json(), dumps=dumps)
+
+
+async def http_post_handler(request):
+    data = await request.json()
+    result = processData(request.app['game'], data)
+    return web.json_response(result, dumps=dumps)
+
+
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+
+    name = Faker().name()
+    log.info('%s joined.', name)
+
+    await ws.send_json({'action': 'connect', 'name': name})
+
+    for w in request.app['websockets'].values():
+        await w.send_json({'action': 'join', 'name': name})
+    request.app['websockets'][name] = ws
+
+    while True:
+        msg = await ws.receive()
+
+        if msg.type == WSMsgType.text:
+            print(request.app['websockets'])
+            try:
+                result = processData(request.app['game'], json.loads(msg.data))
+                for w in request.app['websockets'].values():
+                    await w.send_json(result, dumps=dumps)
+            except:
+                log.error('Wrong socket data: %s', msg.data)
+        else:
+            break
+
+    del request.app['websockets'][name]
+    log.info('%s disconnected.', name)
+    for w in request.app['websockets'].values():
+        await w.send_json({'action': 'disconnect', 'name': name})
+
+    return ws
+
+
+async def shutdown(app):
+    for ws in app['websockets'].values():
+        await ws.close()
+        app['websockets'].clear()
+
+
+def create_runner():
+    app = web.Application()
+    app.add_routes([
+        web.get('/',  http_get_handler),
+        web.post('/', http_post_handler),
+        web.get('/ws', websocket_handler),
+    ])
+    app['game'] = GS.get(id, GameServer())
+    app['websockets'] = {}
+    app.on_shutdown.append(shutdown)
+    return web.AppRunner(app)
+
+
+async def start_server(host="0.0.0.0", port=8000):
+    runner = create_runner()
+    await runner.setup()
+    site = web.TCPSite(runner, host, port)
+    await site.start()
+
+
+def run():
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(start_server())
+    loop.run_forever()
+
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     run()
